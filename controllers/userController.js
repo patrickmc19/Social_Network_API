@@ -65,4 +65,64 @@ const userController = {
             })
             .catch((err) => res.json(err));
     },
+
+    // delete user by id
+    deleteUser({ params }, res) {
+        Users.findOneAndDelete({ _id: params.id })
+            .then((userData) => {
+                if (!userData) {
+                    res.status(404).json({ message: "No user found with this id!" });
+                    return;
+                }
+                res.json(userData);
+            })
+            .catch((err) => res.json(err));
+    },
+
+    // add friend
+    addFriend({ params }, res) {
+        Users.findOneAndUpdate(
+            { _id: params.id },
+            { $push: { friends: params.friendId } },
+            { new: true }
+        )
+        .populate({
+            path: "friends",
+            select: "-__v",
+        })
+        .select("-__v")
+            .then((userData) => {
+                if (!userData) {
+                    res.status(404).json({ message: "No user found with this id!" });
+                    return;
+                }
+                res.json(userData);
+            })
+            .catch((err) => res.json(err));
+    },
+
+    // remove friend
+    removeFriend({ params }, res) {
+        Users.findOneAndUpdate(
+            { _id: params.id },
+            { $pull: { friends: params.friendId } },
+            { new: true }
+        )
+        .populate({
+            path: "friends",
+            select: "-__v",
+        })
+        .select("-__v")
+            .then((userData) => {
+                if (!userData) {
+                    res.status(404).json({ message: "No user found with this id!" });
+                    return;
+                }
+                res.json(userData);
+            })
+            .catch((err) => res.json(err)); 
+    },
 };
+
+// export this controller module
+module.exports = userController;
