@@ -17,7 +17,7 @@ const thoughtController = {
   },
 
   // get one thought by id
-  getThoughtById({ params }, res) {
+  getThoughtId({ params }, res) {
     Thought.findOne({ _id: params.id })
       .populate({
         path: "reactions",
@@ -78,4 +78,47 @@ const thoughtController = {
       })
       .catch((err) => res.status(400).json(err));
   },
+
+    // delete thought by id
+    deleteThought({ params }, res) {
+        Thought.findOneAndDelete({ _id: params.id })
+            .then((thoughtData) => {
+            if (!thoughtData) {
+                res.status(404).json({ message: "No thought found with this id!" });
+                return;
+            }
+            res.json(thoughtData);
+            })
+            .catch((err) => res.status(400).json(err));
+    },
+
+    // add reaction to thought
+    newReaction({ params, body }, res) {
+        Thought.findOneAndUpdate(
+            { _id: params.thoughtId },
+            { $push: { reactions: body } },
+            { new: true, runValidators: true }
+        )
+            .then((thoughtData) => {
+            if (!thoughtData) {
+                res.status(404).json({ message: "No thought found with this id!" });
+                return;
+            }
+            res.json(thoughtData);
+            })
+            .catch((err) => res.status(400).json(err));
+    },
+
+    // delete reaction from thought
+    deleteReaction({ params }, res) {
+        Thought.findOneAndUpdate(
+            { _id: params.thoughtId },
+            { $pull: { reactions: { reactionId: params.reactionId } } },
+            { new: true }
+        )
+            .then((thoughtData) => res.json(thoughtData))
+            .catch((err) => res.status(400).json(err));
+    },
 };
+
+module.exports = thoughtController;
