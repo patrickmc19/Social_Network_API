@@ -1,4 +1,4 @@
-// require installed express router
+// require express router
 const router = require('express').Router();
 
 // require installed api routes
