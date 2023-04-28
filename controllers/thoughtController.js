@@ -48,12 +48,7 @@ const thoughtController = {
           { new: true }
         );
       })
-      .then((thoughtData) => {
-        if (!thoughtData) {
-          res.status(404).json({ message: "No thought found with this id!" });
-          return;
-        }
-        res.json(thoughtData);
+      .then((thoughtData) => {res.json(thoughtData);
       })
       .catch((err) => res.json(err));
   },
